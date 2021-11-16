@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Projet Info vis</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+body,h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
+.w3-bar,h1,button {font-family: "Montserrat", sans-serif}
+.fa-anchor,.fa-coffee {font-size:200px}
+</style>
+<body>
+
+<!-- Navbar -->
+<div class="w3-top">
+  <div class="w3-bar w3-blue w3-card w3-left-align w3-large">
+    <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+    <a href="premier.html" class="w3-bar-item w3-button w3-padding-large w3-white">diagramme à barres </a>
+    <a href="deuxieme.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Pie chart</a>
+    <a href="troisieme.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Interactions</a>
+
+  </div>
+
+  <!-- Navbar on small screens -->
+  <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large">
+    <a href="deuxieme.html" class="w3-bar-item w3-button w3-padding-large">Link 1</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 2</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 3</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 4</a>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="w3-container w3-blue w3-center" style="padding:128px 16px">
+  <h3 class="w3-margin w3-jumbo"> <b> Projet : Info-Vis </b></h3>
+  <h3 class="w5-margin w5-jumbo">Par : Ketfi Raniya , Kessi Lamia et Si Tayeb Majda</h3>
+
+</header>
+<!-- First Grid -->
+<div class="w3-row-padding w3-padding-64 w3-container">
+  <div class="w3-content">
+    <div class="w3-twothird">
+      <h1>Visualisations :</h1>
+      <h2 class="w3-padding-32"> 1- diagramme à barre : </h2>
+
+      <p class="w3-text-grey">Visualisation de la distribution des maladies par tranche d'age sur les variables choisies </p>
+    </div>
+
+    <div class="w3-third w3-center">
+    </div>
+<center>
+    <div  id="my_dataviz"></div>
+
+  </center>
+  <h2 class="w3-padding-32">2- diagramme à barre : </h2>
+
+      <p class="w3-text-grey">Visualisation de la distribution des maladies et tranche d'age sur les variables choisies </p>
+    </div>
+
+    <div class="w3-third w3-center">
+    </div>
+<center>
+    <div  id="my_dataviz2"></div>
+
+  </center>
+  </div>
+
+</div>
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<script>
+// Used to toggle the menu on small screens when clicking on the menu button
+function myFunction() {
+  var x = document.getElementById("navDemo");
+  if (x.className.indexOf("w3-show") == -1) {
+    x.className += " w3-show";
+  } else { 
+    x.className = x.className.replace(" w3-show", "");
+  }
+}
+ // set the dimensions and margins of the graph
+ var margin = {top: 10, right: 30, bottom: 160, left: 50},
+    width = 600 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+// Parse the Data
+d3.csv("https://raw.githubusercontent.com/RANYAKETFI/asi/main/crossed_table.csv", function(data) {
+
+  // List of subgroups = header of the csv files = soil condition here
+  var subgroups = data.columns.slice(1)
+
+  // List of groups = species here = value of the first column called group -> I show them on the X axis
+  var groups = d3.map(data, function(d){return(d.tranche_age)}).keys()
+
+  // Add X axis
+  var x = d3.scaleBand()
+      .domain(groups)
+      .range([0, width])
+      .padding([0.1])
+  svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+
+  
+    .call(d3.axisBottom(x).tickSizeOuter(5));
+    svg.append("text")             
+      .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + margin.top + 50) + ")")
+      .style("text-anchor", "middle")
+      .text("Tranche d'age");
+  // Add Y axis
+  var y = d3.scaleLinear()
+    .domain([0, 70])
+    .range([ height, 2 ]);
+  svg.append("g")
+    .call(d3.axisLeft(y));
+    svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Nombre de malade"); 
+  // color palette = one color per subgroup
+  var keys = ["femme non Fumeuse non Alcoolique", "homme non Fumeur non Alcoolique","femme non fumeuse alcoolique", "homme non Fumeur Alcoolique,","femme fumeuse non alcoolique","homme Fumeur non Alcoolique","femme fumeuse alcoolique","homme Fumeur Alcoolique"]
+
+  var color = d3.scaleOrdinal()
+    .domain(keys)
+    .range(['#d76b60','#4682b4','#f0ec02','#6b9bc3','#e622ab','#d6d6d6','#ff8f26','#854abc']);
+    
+// create a list of keys
+
+// Usually you have a color scale in your chart already
+
+
+// Add one dot in the legend for each name.
+var size = 20
+svg.selectAll("mydots")
+  .data(keys)
+  .enter()
+  .append("rect")
+    .attr("x", 200)
+    .attr("y", function(d,i){ return 0 + i*(size+5)}) // 100 is where the first dot appears. 25 is the distance between dots
+    .attr("width", size)
+    .attr("height", size)
+    .style("fill", function(d){ return color(d)});
+
+
+// Add one dot in the legend for each name.
+svg.selectAll("mylabels")
+  .data(keys)
+  .enter()
+  .append("text")
+    .attr("x", 200 + size*1.2)
+    .attr("y", function(d,i){ return 0 + i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+    .style("fill", function(d){ return color(d)})
+    .text(function(d){ return d})
+    .attr("text-anchor", "left")
+    .style("alignment-baseline", "middle");
+  //stack the data? --> stack per subgroup
+  var stackedData = d3.stack()
+    .keys(subgroups)
+    (data)
+
+  // Show the bars
+  svg.append("g")
+    .selectAll("g")
+    // Enter in the stack data = loop key per key = group per group
+    .data(stackedData)
+    .enter().append("g")
+      .attr("fill", function(d) { return color(d.key); })
+      .selectAll("rect")
+      // enter a second time = loop subgroup per subgroup to add all rectangles
+      .data(function(d) { return d; })
+      .enter().append("rect")
+        .attr("x", function(d) { return x(d.data.tranche_age); })
+        .attr("y", function(d) { return y(d[1]); })
+        .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+        .attr("width",x.bandwidth())
+});
+
+//2 eme diagrammes 
+var svg1 = d3.select("#my_dataviz2")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+// Parse the Data
+d3.csv("https://raw.githubusercontent.com/RANYAKETFI/asi/main/crossed_table3.csv", function(data1) {
+
+  // List of subgroups = header of the csv files = soil condition here
+  var subgroups = data1.columns.slice(1)
+  // List of groups = species here = value of the first column called group -> I show them on the X axis
+  var groups = d3.map(data1, function(d){return(d.age_maladie)}).keys()
+  console.log(groups)
+
+  // Add X axis
+  var x = d3.scaleBand()
+      .domain(groups)
+      .range([0, width])
+      .padding([0.1])
+  svg1.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x).tickSizeOuter(5))
+      .selectAll("text")    
+    .style("text-anchor", "end")
+    .attr("dx", "-.8em")
+    .attr("dy", "-.5em")
+    .attr("transform","rotate(-90)");
+    svg1.append("text")             
+      .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + margin.top + 150) + ")")
+      .style("text-anchor", "middle")
+      .text("Tranche d'age et maladie ");
+  // Add Y axis
+  var y = d3.scaleLinear()
+    .domain([0, 70])
+    .range([ height, 2 ]);
+  svg1.append("g")
+    .call(d3.axisLeft(y));
+    svg1.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Nombre de malade"); 
+  // color palette = one color per subgroup
+  var keys = ["femme non Fumeuse non Alcoolique", "homme non Fumeur non Alcoolique","femme non fumeuse alcoolique", "homme non Fumeur Alcoolique,","femme fumeuse non alcoolique","homme Fumeur non Alcoolique","femme fumeuse alcoolique","homme Fumeur Alcoolique"]
+
+  var color = d3.scaleOrdinal()
+    .domain(keys)
+    .range(['#d76b60','#4682b4','#f0ec02','#6b9bc3','#e622ab','#d6d6d6','#ff8f26','#854abc']);
+    
+// create a list of keys
+
+// Usually you have a color scale in your chart already
+
+
+// Add one dot in the legend for each name.
+var size = 20
+svg1.selectAll("mydots")
+  .data(keys)
+  .enter()
+  .append("rect")
+    .attr("x", 200)
+    .attr("y", function(d,i){ return 0 + i*(size+5)}) // 100 is where the first dot appears. 25 is the distance between dots
+    .attr("width", size)
+    .attr("height", size)
+    .style("fill", function(d){ return color(d)});
+
+
+// Add one dot in the legend for each name.
+svg1.selectAll("mylabels")
+  .data(keys)
+  .enter()
+  .append("text")
+    .attr("x", 200 + size*1.2)
+    .attr("y", function(d,i){ return 0 + i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+    .style("fill", function(d){ return color(d)})
+    .text(function(d){ return d})
+    .attr("text-anchor", "left")
+    .style("alignment-baseline", "middle");
+  //stack the data? --> stack per subgroup
+  var stackedData = d3.stack()
+    .keys(subgroups)
+    (data1)
+console.log(stackedData)
+  // Show the bars
+  svg1.append("g")
+    .selectAll("g")
+    // Enter in the stack data = loop key per key = group per group
+    .data(stackedData)
+    .enter().append("g")
+      .attr("fill", function(d) { return color(d.key); })
+      .selectAll("rect")
+      // enter a second time = loop subgroup per subgroup to add all rectangles
+      .data(function(d) { return d; })
+      .enter().append("rect")
+        .attr("x", function(d) { return x(d.data.age_maladie); })
+        .attr("y", function(d) { return y(d[1]); })
+        .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+        .attr("width",x.bandwidth())
+});
+</script>
+
+</body>
+</html>

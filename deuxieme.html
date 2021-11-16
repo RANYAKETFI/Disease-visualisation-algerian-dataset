@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Projet info vis</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Color scale -->
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+<body>
+
+<!-- Navbar -->
+<div class="w3-top">
+  <div class="w3-bar w3-blue w3-card w3-left-align w3-large">
+    <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+    <a href="premier.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">diagramme à barres </a>
+    <a href="deuxieme.html" class="w3-bar-item w3-button w3-padding-large w3-white">Pie chart</a>
+
+    <a href="troisieme.html" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Interactions</a>
+      </div>
+
+  <!-- Navbar on small screens -->
+  <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large">
+    <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 1</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 2</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 3</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding-large">Link 4</a>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="w3-container w3-blue w3-center" style="padding:128px 16px">
+  <h3 class="w3-margin w3-jumbo"> <b> Projet : Info-Vis </b></h3>
+  <h3 class="w5-margin w5-jumbo">Par : Ketfi Raniya , Kessi Lamia et Si Tayeb Majda</h3>
+
+</header>
+<!-- First Grid -->
+<div class="w3-row-padding w3-padding-64 w3-container">
+  <div class="w3-content">
+    <div class="w3-twothird">
+      <h1>Visualisations :</h1
+      <h3 class="w3-padding-32">1- Pie Chart </h3>
+
+      <p class="w3-text-grey">Visualisation de la distribution des maladies par tranche d'age et Sexe : </p>
+    </div>
+  
+  </div>
+  
+</div>
+<center>
+  <h2 id="titre"> </h2>
+  <button id="1" onclick="showdata(p1,this)">Femme </button>
+<button id ="2" onclick="showdata(p2,this)">Homme</button>
+
+</center>
+<br>
+<br>
+<br>
+
+<div>
+  <center>
+  <svg width="500" height="400"></svg> <!--Step 2-->
+</center>
+</div>
+
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" charset="utf-8"></script>
+
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<script>
+var dateset
+var s=1;
+ 
+var p1="https://raw.githubusercontent.com/RANYAKETFI/asi/main/age_femme.csv"
+var p2="https://raw.githubusercontent.com/RANYAKETFI/asi/main/age_homme.csv"
+showdata(p1,s)
+
+function showdata(p,s)
+{
+ d3.csv(p, function(data) {
+ dataset = data;
+
+ s=s.id;
+if (s==1 )
+{
+  document.getElementById("titre").innerHTML = "Pour femmes";
+
+}
+else
+{
+  document.getElementById("titre").innerHTML = "Pour hommes ";
+
+}
+ var svg = d3.select("svg"),
+            width = svg.attr("width"),
+            height = svg.attr("height"),
+            radius = 200;
+            var g = svg.append("g")
+                   .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+        // Step 4
+        var ordScale = d3.scaleOrdinal()
+                        	.domain(data)
+                        	.range(['#e39696','#e37171','#e34d4d','#e02424','#9e0808','#4a0303']);
+
+        // Step 5
+        var pie = d3.pie().value(function(d) { 
+               if( s==1 ){
+                return d.femme;  }
+                else 
+                {
+                  return d.homme;
+                }
+            });
+
+        var arc = g.selectAll("arc")
+                   .data(pie(data))
+                   .enter();
+
+        // Step 6
+        var path = d3.arc()
+                     .outerRadius(radius)
+                     .innerRadius(0);
+        
+        arc.append("path")
+           .attr("d", path)
+           .attr("fill", function(d) { return ordScale(d.data.tranche_age); });
+
+               
+var size = 20
+var keys=["0-18","18-28","28-38","38-48","48-58","58-68"]
+var color = d3.scaleOrdinal()
+    .domain(keys)
+  	.range(['#e39696','#e37171','#e34d4d','#e02424','#9e0808','#4a0303']);
+    
+svg.selectAll("mydots")
+  .data(keys)
+  .enter()
+  .append("rect")
+    .attr("x", 0)
+    .attr("y", function(d,i){ return 0 + i*(size+5)}) // 100 is where the first dot appears. 25 is the distance between dots
+    .attr("width", size)
+    .attr("height", size)
+    .style("fill", function(d){ return color(d)});
+
+
+// Add one dot in the legend for each name.
+svg.selectAll("mylabels")
+  .data(keys)
+  .enter()
+  .append("text")
+    .attr("x", 0 + size*1.2)
+    .attr("y", function(d,i){ return 0 + i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+    .style("fill", function(d){ return color(d)})
+    .text(function(d){ return d})
+    .attr("text-anchor", "left")
+    .style("alignment-baseline", "middle");
+});
+svg.append("text")
+    .attr("x", w / 2 )
+    .attr("y", 0)
+    .style("text-anchor", "top")
+    .text("Title of Diagram");
+}
+</script>
+
+</body>
+</html>
